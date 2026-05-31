@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英語接続詞トレーニング</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      position: sticky;
+      top: 0;
+      background: #f3f4f6;
+      padding-bottom: 12px;
+      z-index: 10;
+    }
+
+    select, input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .word {
+      font-size: 22px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .meaning {
+      font-size: 14px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .sentence {
+      font-size: 18px;
+      line-height: 1.6;
+      margin: 14px 0;
+    }
+
+    .translation {
+      background: #eef2ff;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #374151;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      min-width: 70px;
+    }
+
+    button.secondary {
+      background: #4b5563;
+    }
+
+    .footer {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        max-width: 900px;
+        margin: auto;
+      }
+
+      .sentence {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>英語接続詞トレーニング</h1>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="単語検索..." />
+
+    <select id="voiceSelect">
+      <option value="en-US">US</option>
+      <option value="en-GB">UK</option>
+    </select>
+  </div>
+
+  <div id="cards"></div>
+
+  <script>
+    const data = [
+      ["unless", "〜しない限り", "I won’t go unless it stops raining.", "雨がやまない限り、私は行きません。"],
+      ["as soon as", "〜するとすぐに", "Call me as soon as you arrive.", "着いたらすぐに電話してください。"],
+      ["once", "〜したら", "Once you try it, you’ll like it.", "一度試せば、気に入るでしょう。"],
+      ["although", "〜だけれども", "Although he was tired, he kept working.", "彼は疲れていたけれど、働き続けました。"],
+      ["though", "〜だけれども", "I liked the movie, though it was long.", "長かったけれど、その映画は好きでした。"],
+      ["even though", "〜にもかかわらず", "Even though it was cold, she went swimming.", "寒かったにもかかわらず、彼女は泳ぎに行きました。"],
+      ["whether", "〜かどうか", "I don’t know whether he will come.", "彼が来るかどうかわかりません。"],
+      ["whenever", "〜するときはいつでも", "Visit me whenever you have time.", "時間があるときはいつでも訪ねてください。"],
+      ["whereas", "一方で", "He likes coffee, whereas I prefer tea.", "彼はコーヒーが好きですが、私は紅茶のほうが好きです。"],
+      ["even if", "たとえ〜でも", "I’ll support you even if you fail.", "たとえ失敗しても、私はあなたを支えます。"],
+      ["in case", "〜の場合に備えて", "Take an umbrella in case it rains.", "雨に備えて傘を持って行ってください。"],
+      ["as long as", "〜する限り", "You can stay as long as you are quiet.", "静かにしている限り、いても大丈夫です。"],
+      ["now that", "今や〜なので", "Now that you’re here, let’s start.", "あなたが来たので、始めましょう。"],
+      ["so that", "〜するために", "I study hard so that I can pass.", "合格できるように、一生懸命勉強しています。"],
+      ["provided that", "〜という条件で", "You may go provided that you finish your work.", "仕事を終えることを条件に、行ってもよいです。"],
+      ["given that", "〜を考えると", "Given that it’s late, we should leave.", "遅いので、私たちは出発すべきです。"],
+      ["in the event that", "もし〜の場合には", "In the event of a fire, use the stairs.", "火事の場合には階段を使ってください。"],
+      ["therefore", "したがって", "He was sick; therefore, he stayed home.", "彼は病気でした。したがって、家にいました。"],
+      ["however", "しかしながら", "She is rich; however, she is unhappy.", "彼女は裕福ですが、幸せではありません。"],
+      ["nevertheless", "それにもかかわらず", "It was difficult; nevertheless, we succeeded.", "難しかったですが、それでも私たちは成功しました。"],
+      ["moreover", "そのうえ", "The hotel was cheap; moreover, it was clean.", "そのホテルは安く、そのうえ清潔でした。"],
+      ["furthermore", "さらに", "He is smart; furthermore, he is kind.", "彼は賢く、さらに親切です。"],
+      ["in addition", "加えて", "In addition, we need more time.", "加えて、もっと時間が必要です。"],
+      ["thus", "したがって", "She studied hard, thus improving her grades.", "彼女は熱心に勉強し、その結果成績を上げました。"],
+      ["as a result", "その結果", "He missed the train. As a result, he was late.", "彼は電車に乗り遅れました。その結果、遅刻しました。"],
+      ["meanwhile", "その間に", "I cooked dinner. Meanwhile, she set the table.", "私は夕食を作りました。その間に彼女は食卓を整えました。"],
+      ["in contrast", "対照的に", "In contrast, my brother is very outgoing.", "対照的に、私の兄はとても社交的です。"],
+      ["in fact", "実際には", "I thought it was hard. In fact, it was easy.", "難しいと思っていました。実際には簡単でした。"],
+      ["otherwise", "さもないと", "Hurry up; otherwise, we’ll miss the bus.", "急いでください。さもないとバスに乗り遅れます。"],
+      ["instead", "その代わりに", "She stayed home instead of going out.", "彼女は外出する代わりに家にいました。"],
+      ["rather", "むしろ", "I’d rather stay home tonight.", "今夜はむしろ家にいたいです。"],
+      ["consequently", "その結果", "He worked hard; consequently, he got promoted.", "彼は一生懸命働き、その結果昇進しました。"],
+      ["conversely", "逆に", "Cats are independent; conversely, dogs need attention.", "猫は独立しています。逆に、犬は注意を必要とします。"],
+      ["namely", "すなわち", "We visited two cities, namely Kyoto and Osaka.", "私たちは2つの都市、すなわち京都と大阪を訪れました。"],
+      ["on the contrary", "それどころか", "I’m not tired. On the contrary, I’m energetic.", "私は疲れていません。それどころか元気です。"],
+      ["thereby", "それによって", "He saved money, thereby reducing his stress.", "彼はお金を節約し、それによってストレスを減らしました。"]
+    ];
+
+    const cards = document.getElementById('cards');
+    const search = document.getElementById('search');
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = document.getElementById('voiceSelect').value;
+      utterance.rate = 0.9;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utterance);
+    }
+
+    function render(keyword = '') {
+      cards.innerHTML = '';
+
+      data
+        .filter(([word]) => word.toLowerCase().includes(keyword.toLowerCase()))
+        .forEach(([word, meaning, sentence, translation]) => {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          card.innerHTML = `
+            <div class="header">
+              <div>
+                <div class="word">${word}</div>
+                <div class="meaning">${meaning}</div>
+              </div>
+
+              <button onclick="speak('${sentence.replace(/'/g, "\'")}')">▶ Speak</button>
+            </div>
+
+            <div class="sentence">${sentence}</div>
+
+            <div class="translation">${translation}</div>
+
+            <div class="footer">
+              <button class="secondary" onclick="speak('${word}')">単語</button>
+              <button onclick="speak('${sentence.replace(/'/g, "\'")}')">全文</button>
+            </div>
+          `;
+
+          cards.appendChild(card);
+        });
+    }
+
+    search.addEventListener('input', e => {
+      render(e.target.value);
+    });
+
+    render();
+  </script>
+</body>
+</html>
